@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>WebHound Recon Tool</title>
+</head>
+
+<body>
+    <h1>WebHound System Test</h1>
+
+    <form method="post" action="/">
+        <input type="text" name="target_url" placeholder="Enter target URL" required>
+        <button type="submit">Send</button>
+    </form>
+
+    {% if message %}
+    <div style="margin-top: 20px; padding: 10px; border: 1px solid green; color: green;">
+        <strong>Result:</strong> {{ message }}
+    </div>
+    {% endif %}
+
+
+</body>
+
+</html>
