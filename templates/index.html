@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>WebHound Recon Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
@@ -15,11 +16,10 @@
     </form>
 
     {% if message %}
-    <div style="margin-top: 20px; padding: 10px; border: 1px solid green; color: green;">
+    <div class="result-box">
         <strong>Result:</strong> {{ message }}
     </div>
     {% endif %}
-
 
 </body>
 
