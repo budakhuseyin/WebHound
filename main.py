@@ -6,14 +6,14 @@ app=Flask(__name__)
 
 
 def index():
-    message= None
+    scan_results=None
 
     if request.method=="POST":
         target= request.form.get('target_url')
 
-        message=web_hound.test(target)
+        scan_results=web_hound.run_recon(target)
 
-    return render_template("index.html", message=message)
+    return render_template("index.html", results=scan_results)
         
 
 if __name__ =="__main__":

@@ -15,10 +15,38 @@
         <button type="submit">Send</button>
     </form>
 
-    {% if message %}
-    <div class="result-box">
-        <strong>Result:</strong> {{ message }}
-    </div>
+    {% if results %}
+        <div class="result-box">
+            {% if results.error %}
+                <span style="color: red;"><strong>Error:</strong> {{ results.error }}</span>
+            {% else %}
+                <h3 style="margin-top: 0;">Scan Completed</h3>
+                <p><strong>Target:</strong> {{ results.domain }}</p>
+                <p><strong>IP Address:</strong> {{ results.ip }}</p>
+                
+                <p><strong>Open Ports:</strong></p>
+                {% if results.open_ports %}
+                    <ul style="list-style-type: none; padding: 0;">
+                        {% for port in results.open_ports %}
+                            <li>🟢 Port {{ port }} is OPEN</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No open ports found in the default list.</p>
+                {% endif %}
+
+                    <p><strong>Subdomains Discovered (Total: {{ results.subdomains|length }}):</strong></p>                {% if results.subdomains %}
+                    <ul style="list-style-type: none; padding: 0; max-height: 200px; overflow-y: auto; border: 1px solid #333; padding: 10px; background-color: #111;">
+                        {% for sub in results.subdomains %}
+                            <li style="margin-bottom: 5px;"> {{ sub }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No subdomains found.</p>
+                {% endif %}
+
+            {% endif %}
+        </div>
     {% endif %}
 
 </body>
