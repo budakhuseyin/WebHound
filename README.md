@@ -8,6 +8,7 @@ Note: This project is currently under development and is not yet complete.
 - Port Scanner: Scans common ports to check for availability.
 - Subdomain Discovery: Identifies subdomains using crt.sh.
 - Multi-threading: Performs tasks in parallel for better performance.
+- Security headers check: Reports present/missing common HTTP security headers.
 
 ## Quick Start
 1. Install requirements:

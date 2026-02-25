@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>WebHound Recon Tool</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
 </head>
 
 <body>
@@ -35,6 +36,34 @@
                     <p>No open ports found in the default list.</p>
                 {% endif %}
 
+                <p><strong>Security Headers Analysis:</strong></p>
+                {% if results.security_headers %}
+                    {% if results.security_headers.error %}
+                        <p style="color: red;">{{ results.security_headers.error }}</p>
+                    {% else %}
+                        <p style="margin-bottom: 5px; font-size: 0.9em; color: #00ff00;">✅ Present Headers:</p>
+                        <ul style="list-style-type: none; padding-left: 10px; margin-top: 0;">
+                            {% for header, value in results.security_headers.present.items() %}
+                                <li style="margin-bottom:4px;">
+                                    <strong>{{ header }}</strong>
+                                    : <span style="color:#cfcfcf;">{{ value if value else "(no value)" }}</span>
+                                    {% if results.security_headers.assessments and header in results.security_headers.assessments %}
+                                        <em style="color:#888; margin-left:8px;">({{ results.security_headers.assessments[header] }})</em>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                        <p style="margin-bottom: 5px; font-size: 0.9em; color: #ff4444;">❌ Missing Headers (Vulnerability!):</p>
+                        <ul style="list-style-type: none; padding-left: 10px; margin-top: 0; color: #ff4444;">
+                            {% for missing in results.security_headers.missing %}
+                                <li>{{ missing }}</li>
+                            {% endfor %}
+                        </ul>
+
+                    {% endif %}
+                {% endif %}
+
                     <p><strong>Subdomains Discovered (Total: {{ results.subdomains|length }}):</strong></p>                {% if results.subdomains %}
                     <ul style="list-style-type: none; padding: 0; max-height: 200px; overflow-y: auto; border: 1px solid #333; padding: 10px; background-color: #111;">
                         {% for sub in results.subdomains %}
@@ -44,6 +73,9 @@
                 {% else %}
                     <p>No subdomains found.</p>
                 {% endif %}
+
+
+                
 
             {% endif %}
         </div>
