@@ -5,82 +5,99 @@
     <meta charset="UTF-8">
     <title>WebHound Recon Tool</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    
+
 </head>
 
 <body>
-    <h1>WebHound System Test</h1>
+    <div class="main-container">
+        <h1>WebHound <span style="font-weight: 300; opacity: 0.6;">Scanner</span></h1>
 
-    <form method="post" action="/">
-        <input type="text" name="target_url" placeholder="Enter target URL" required>
-        <button type="submit">Send</button>
-    </form>
+        <form method="post" action="/">
+            <input type="text" name="target_url" placeholder="https://example.com" required>
+            <button type="submit">Scan Target</button>
+        </form>
 
-    {% if results %}
+        {% if results %}
         <div class="result-box">
             {% if results.error %}
-                <span class="error-text"><strong>Error:</strong> {{ results.error }}</span>
+            <span class="error-text"><strong>Error:</strong> {{ results.error }}</span>
             {% else %}
-                <h3 class="scan-title">Scan Completed</h3>
-                <p><strong>Target:</strong> {{ results.domain }}</p>
-                <p><strong>IP Address:</strong> {{ results.ip }}</p>
-                
-                <p><strong>Open Ports:</strong></p>
-                {% if results.open_ports %}
-                    <ul class="clean-list">
-                        {% for port in results.open_ports %}
-                            <li> Port {{ port }} is OPEN</li>
+            <h3 class="scan-title">Scan Completed</h3>
+            <div class="info-grid">
+                <p><strong>Target:</strong> <span class="header-name">{{ results.domain }}</span></p>
+                <p><strong>IP Address:</strong> <span class="header-name">{{ results.ip }}</span></p>
+            </div>
+
+            <span class="section-label">Open Ports</span>
+            {% if results.open_ports %}
+            <div class="scroll-box">
+                <ul class="clean-list">
+                    {% for port in results.open_ports %}
+                    <li class="list-item"> Port {{ port }} is <span style="color: var(--accent-color);">OPEN</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <p class="text-secondary">No open ports found in the default list.</p>
+            {% endif %}
+
+            <span class="section-label">Security Headers Analysis</span>
+            {% if results.security_headers %}
+            {% if results.security_headers.error %}
+            <p class="danger-text">{{ results.security_headers.error }}</p>
+            {% else %}
+            <div class="headers-container">
+                {% for header, value in results.security_headers.present.items() %}
+                <div class="header-item">
+                    <div class="header-name">
+                        {{ header }}
+                        {% if results.security_headers.assessments and header in results.security_headers.assessments %}
+                        <span style="color: #64748b; font-size: 0.75rem; font-weight: normal; margin-left: 8px;">
+                            // {{ results.security_headers.assessments[header] }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="header-value">
+                        {% if header == 'Content-Security-Policy' %}
+                        {% for directive in value.split(';') %}
+                        {% if directive.strip() %}
+                        <span class="csp-directive">{{ directive.strip() }};</span>
+                        {% endif %}
                         {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No open ports found in the default list.</p>
-                {% endif %}
+                        {% else %}
+                        {{ value if value else "(no value)" }}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
 
-                <p><strong>Security Headers Analysis:</strong></p>
-                {% if results.security_headers %}
-                    {% if results.security_headers.error %}
-                        <p style="color: red;">{{ results.security_headers.error }}</p>
-                    {% else %}
-                        <p class="succes-text"> Present Headers:</p>
-                        <ul class="nested-list">
-                            {% for header, value in results.security_headers.present.items() %}
-                                <li style="margin-bottom:4px;">
-                                    <strong>{{ header }}</strong>
-                                    : <span style="color:#cfcfcf;">{{ value if value else "(no value)" }}</span>
-                                    {% if results.security_headers.assessments and header in results.security_headers.assessments %}
-                                        <em style="color:#888; margin-left:8px;">({{ results.security_headers.assessments[header] }})</em>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ul>
+            <span class="section-label danger-text">Missing Headers</span>
+            <div class="missing-container">
+                {% for missing in results.security_headers.missing %}
+                <span class="missing-header">{{ missing }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endif %}
 
-                        <p class="danger-text"> Missing Headers (Vulnerability!):</p>
-                        <ul class="nested-list danger-list">
-                            {% for missing in results.security_headers.missing %}
-                                <li>{{ missing }}</li>
-                            {% endfor %}
-                        </ul>
-
-                    {% endif %}
-                {% endif %}
-
-                    <p><strong>Subdomains Discovered (Total: {{ results.subdomains|length }}):</strong></p>                {% if results.subdomains %}
-                    <ul class="clean-list scroll-box">
-                        {% for sub in results.subdomains %}
-                            <li class="list-item"> {{ sub }}</li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No subdomains found.</p>
-                {% endif %}
-
-
-                
-
+            <span class="section-label">Subdomains Discovered (Total: {{ results.subdomains|length }})</span>
+            {% if results.subdomains %}
+            <div class="scroll-box">
+                <ul class="clean-list">
+                    {% for sub in results.subdomains %}
+                    <li class="list-item"> {{ sub }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <p class="text-secondary">No subdomains found.</p>
+            {% endif %}
             {% endif %}
         </div>
-    {% endif %}
+        {% endif %}
 
+    </div>
 </body>
 
 </html>
