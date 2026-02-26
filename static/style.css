@@ -52,7 +52,56 @@ button:hover {
     background-color: #1a2b1a;
     color: #00ff00;
     border-radius: 5px;
-    width: 420px;
-    text-align: center;
+    width: fit-content; 
+    min-width: 420px;   
+    max-width: 90%;     
+    text-align: left; 
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+.error-text {
+    color: red;
+}
+
+.scan-title {
+    margin-top: 0;
+}
+
+.clean-list{
+    list-style-type:none;
+    padding: 0
+}
+
+.succes-text{
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #00ff00;
+}
+
+.danger-text{
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #ff4444;
+}
+
+.nested-list{
+    list-style-type: none;
+    padding-left: 10px;
+    margin-top: 0;
+}
+
+.danger-list{
+    color: #ff4444; 
+}
+
+.scroll-box{
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #333;
+    padding: 10px;
+    background-color: #111;
+}
+
+.list-item{
+    margin-bottom: 5px;
 }

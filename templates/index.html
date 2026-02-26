@@ -19,15 +19,15 @@
     {% if results %}
         <div class="result-box">
             {% if results.error %}
-                <span style="color: red;"><strong>Error:</strong> {{ results.error }}</span>
+                <span class="error-text"><strong>Error:</strong> {{ results.error }}</span>
             {% else %}
-                <h3 style="margin-top: 0;">Scan Completed</h3>
+                <h3 class="scan-title">Scan Completed</h3>
                 <p><strong>Target:</strong> {{ results.domain }}</p>
                 <p><strong>IP Address:</strong> {{ results.ip }}</p>
                 
                 <p><strong>Open Ports:</strong></p>
                 {% if results.open_ports %}
-                    <ul style="list-style-type: none; padding: 0;">
+                    <ul class="clean-list">
                         {% for port in results.open_ports %}
                             <li> Port {{ port }} is OPEN</li>
                         {% endfor %}
@@ -41,8 +41,8 @@
                     {% if results.security_headers.error %}
                         <p style="color: red;">{{ results.security_headers.error }}</p>
                     {% else %}
-                        <p style="margin-bottom: 5px; font-size: 0.9em; color: #00ff00;">✅ Present Headers:</p>
-                        <ul style="list-style-type: none; padding-left: 10px; margin-top: 0;">
+                        <p class="succes-text"> Present Headers:</p>
+                        <ul class="nested-list">
                             {% for header, value in results.security_headers.present.items() %}
                                 <li style="margin-bottom:4px;">
                                     <strong>{{ header }}</strong>
@@ -54,8 +54,8 @@
                             {% endfor %}
                         </ul>
 
-                        <p style="margin-bottom: 5px; font-size: 0.9em; color: #ff4444;">❌ Missing Headers (Vulnerability!):</p>
-                        <ul style="list-style-type: none; padding-left: 10px; margin-top: 0; color: #ff4444;">
+                        <p class="danger-text"> Missing Headers (Vulnerability!):</p>
+                        <ul class="nested-list danger-list">
                             {% for missing in results.security_headers.missing %}
                                 <li>{{ missing }}</li>
                             {% endfor %}
@@ -65,9 +65,9 @@
                 {% endif %}
 
                     <p><strong>Subdomains Discovered (Total: {{ results.subdomains|length }}):</strong></p>                {% if results.subdomains %}
-                    <ul style="list-style-type: none; padding: 0; max-height: 200px; overflow-y: auto; border: 1px solid #333; padding: 10px; background-color: #111;">
+                    <ul class="clean-list scroll-box">
                         {% for sub in results.subdomains %}
-                            <li style="margin-bottom: 5px;"> {{ sub }}</li>
+                            <li class="list-item"> {{ sub }}</li>
                         {% endfor %}
                     </ul>
                 {% else %}
