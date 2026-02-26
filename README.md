@@ -9,6 +9,7 @@ Note: This project is currently under development and is not yet complete.
 - Subdomain Discovery: Identifies subdomains using crt.sh.
 - Multi-threading: Performs tasks in parallel for better performance.
 - Security headers check: Reports present/missing common HTTP security headers.
+- Directory Scanning: Discovers hidden files and sensitive folders.
 
 ## Quick Start
 1. Install requirements:

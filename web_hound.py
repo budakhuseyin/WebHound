@@ -4,7 +4,7 @@ import concurrent.futures # makes all functions work together
 from scanners.port_scanner import scan_ports
 from scanners.subdomain import find_subdomains
 from scanners.header import check_security_headers
-
+from scanners.directory_scanner import scan_directories
 
 
 def run_recon(target_url):
@@ -26,6 +26,7 @@ def run_recon(target_url):
         future_ports= executor.submit(scan_ports,target_ip)
         future_subdomains=executor.submit(find_subdomains,domain)
         future_headers=executor.submit(check_security_headers,domain)
+        future_directories=executor.submit(scan_directories,domain)
 
 
 
@@ -34,6 +35,7 @@ def run_recon(target_url):
         founded_ports=future_ports.result()
         founded_subdomains=future_subdomains.result()
         founded_headers=future_headers.result()
+        founded_directories=future_directories.result()
 
     
     return {
@@ -41,5 +43,6 @@ def run_recon(target_url):
         "ip": target_ip,
         "open_ports": founded_ports,
         "subdomains": founded_subdomains,
-        "security_headers": founded_headers
+        "security_headers": founded_headers,
+        "directories": founded_directories
     }    

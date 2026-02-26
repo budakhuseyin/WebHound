@@ -2,8 +2,20 @@ import requests
 
 
 def check_security_headers(domain):
+    # Protokol tespiti (Daha esnek çalışma için)
+    base_url = None
+    for proto in ["https://", "http://"]:
+        try:
+            r = requests.head(f"{proto}{domain}", timeout=5, allow_redirects=True)
+            base_url = r.url.rstrip('/')
+            break
+        except:
+            continue
+    
+    if not base_url:
+        base_url = f"http://{domain}"
 
-    url=f"https://{domain}"
+    url = base_url
 
     headers_to_check=[
         'Strict-Transport-Security',

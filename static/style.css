@@ -10,6 +10,11 @@
     --glass-border: rgba(255, 255, 255, 0.05);
 }
 
+.danger-text {
+    color: var(--danger) !important;
+}
+
+
 * {
     box-sizing: border-box;
 }
@@ -165,6 +170,14 @@ button:hover {
     font-size: 0.8rem;
 }
 
+.missing-container {
+    padding: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+
 .scroll-box {
     max-height: 300px;
     overflow-y: auto;
@@ -207,4 +220,45 @@ button:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+/* Directory Scanner Styles */
+.directory-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.status-badge {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-200 {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.status-403 {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.status-other {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.item-size {
+    font-size: 0.7rem;
+    color: var(--subtext);
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
 }

@@ -93,6 +93,38 @@
             {% else %}
             <p class="text-secondary">No subdomains found.</p>
             {% endif %}
+
+            <span class="section-label">Smart Directory Scanner (Robots.txt Paths: {{ results.directories.robots_count
+                }})</span>
+            {% if results.directories.discovered %}
+            <div class="scroll-box">
+                <ul class="clean-list">
+                    {% for item in results.directories.discovered %}
+                    <li class="list-item">
+                        <div class="directory-item">
+                            <span class="header-name" style="word-break: break-all; margin-right: 15px;">{{ item.url
+                                }}</span>
+                            <span
+                                class="status-badge {% if item.status == 200 %}status-200{% elif item.status == 403 %}status-403{% elif item.status in [301, 302, 307, 308] %}status-403{% else %}status-other{% endif %}">
+                                {{ item.status }}
+                            </span>
+                        </div>
+                        {% if item.redirect %}
+                        <div style="font-size: 0.75rem; color: var(--accent); opacity: 0.8; margin-top: 2px;">
+                            ➜ Redirects to: <span style="font-family: 'JetBrains Mono', monospace;">{{ item.redirect
+                                }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="item-size">
+                            Size: {{ (item.size / 1024)|round(2) }} KB
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <p class="text-secondary">No sensitive files or directories discovered.</p>
+            {% endif %}
             {% endif %}
         </div>
         {% endif %}
