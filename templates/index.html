@@ -28,6 +28,56 @@
                 <p><strong>IP Address:</strong> <span class="header-name">{{ results.ip }}</span></p>
             </div>
 
+            <span class="section-label">Technology Stack</span>
+            {% if results.tech_stack %}
+            <div class="tech-grid">
+                <!-- Web Server -->
+                <div class="tech-card">
+                    <span class="tech-icon">🌍</span>
+                    <span class="tech-title">Web Server</span>
+                    <span class="tech-value">{{ results.tech_stack.web_server }}</span>
+                </div>
+
+                <!-- Programming Language -->
+                <div class="tech-card">
+                    <span class="tech-icon">⚙️</span>
+                    <span class="tech-title">Backend Language</span>
+                    <span class="tech-value">{{ results.tech_stack.programming_language }}</span>
+                </div>
+
+                <!-- Framework -->
+                <div class="tech-card">
+                    <span class="tech-icon">🏗️</span>
+                    <span class="tech-title">Framework</span>
+                    <span class="tech-value">{{ results.tech_stack.framework }}</span>
+                </div>
+
+                <!-- CMS -->
+                <div class="tech-card">
+                    <span class="tech-icon">📝</span>
+                    <span class="tech-title">CMS</span>
+                    <span class="tech-value">{{ results.tech_stack.cms }}</span>
+                </div>
+
+                <!-- Frontend -->
+                <div class="tech-card">
+                    <span class="tech-icon">🎨</span>
+                    <span class="tech-title">Frontend Libraries</span>
+                    <div class="tech-tags">
+                        {% if results.tech_stack.frontend %}
+                        {% for lib in results.tech_stack.frontend %}
+                        <span class="tech-tag">{{ lib }}</span>
+                        {% endfor %}
+                        {% else %}
+                        <span class="tech-value" style="font-size:1rem; font-weight:normal;">Not Found</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-secondary">Technology details could not be extracted.</p>
+            {% endif %}
+
             <span class="section-label">Open Ports</span>
             {% if results.open_ports %}
             <div class="scroll-box">

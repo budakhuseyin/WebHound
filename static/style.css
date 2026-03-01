@@ -262,3 +262,64 @@ button:hover {
     margin-top: 4px;
     font-family: 'JetBrains Mono', monospace;
 }
+
+/* Tech Stack Grid Styles */
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.tech-card {
+    background: rgba(0, 255, 157, 0.03);
+    border: 1px solid rgba(0, 255, 157, 0.15);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tech-card:hover {
+    transform: translateY(-2px);
+    background: rgba(0, 255, 157, 0.06);
+    box-shadow: 0 4px 20px rgba(0, 255, 157, 0.08);
+    border-color: rgba(0, 255, 157, 0.3);
+}
+
+.tech-icon {
+    font-size: 1.4em;
+    margin-bottom: 4px;
+}
+
+.tech-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--subtext);
+    font-weight: 600;
+}
+
+.tech-value {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 1.1rem;
+    font-family: 'Outfit', sans-serif;
+}
+
+.tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.tech-tag {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
