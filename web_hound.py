@@ -6,6 +6,7 @@ from scanners.subdomain import find_subdomains
 from scanners.header import check_security_headers
 from scanners.directory_scanner import scan_directories
 from scanners.tech_detector import detect_technologies
+from scanners.ssl_scanner import check_ssl
 from scanners.whois_scanner import get_whois_info
 from scanners.dns_scanner import scan_dns_records
 
@@ -30,6 +31,7 @@ def run_recon(target_url):
         future_headers=executor.submit(check_security_headers,domain)
         future_directories=executor.submit(scan_directories,domain)
         future_tech_detector=executor.submit(detect_technologies,target_url)
+        future_ssl=executor.submit(check_ssl,domain)
         future_whois_scanner=executor.submit(get_whois_info,domain)
         future_dns_scanner=executor.submit(scan_dns_records,domain)
 
@@ -40,6 +42,7 @@ def run_recon(target_url):
         founded_headers=future_headers.result()
         founded_directories=future_directories.result()
         founded_tech_detector=future_tech_detector.result()
+        founded_ssl=future_ssl.result()
         founded_whois_scanner=future_whois_scanner.result()
         founded_dns_scanner=future_dns_scanner.result()
 
@@ -52,7 +55,8 @@ def run_recon(target_url):
         "security_headers": founded_headers,
         "directories": founded_directories,
         "tech_stack" :founded_tech_detector,
+        "ssl_info": founded_ssl,
         "whois_data" :founded_whois_scanner,
         "dns_records" :founded_dns_scanner
 
-    }    
+    }

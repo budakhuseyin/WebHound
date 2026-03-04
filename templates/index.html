@@ -185,6 +185,36 @@
             <p class="text-secondary">DNS records could not be extracted.</p>
             {% endif %}
 
+            <span class="section-label">Subdomains Discovered (Total: {{ results.subdomains|length }})</span>
+            {% if results.subdomains %}
+            <div class="scroll-box">
+                <ul class="clean-list">
+                    {% for sub in results.subdomains %}
+                    <li class="list-item"> {{ sub }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <p class="text-secondary">No subdomains found.</p>
+            {% endif %}
+
+            <span class="section-label">Open Ports</span>
+            {% if results.open_ports %}
+            <div class="scroll-box">
+                <ul class="clean-list">
+                    {% for item in results.open_ports %}
+                    <li class="list-item">
+                        Port {{ item.port }} is <span style="color: var(--accent);">OPEN</span>
+                        <span style="color: var(--subtext); font-size: 0.8rem; margin-left: 10px;">➜ {{ item.banner
+                            }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <p class="text-secondary">No open ports found in the default list.</p>
+            {% endif %}
+
             <span class="section-label">Technology Stack</span>
             {% if results.tech_stack %}
             <div class="tech-grid">
@@ -243,17 +273,63 @@
             <p class="text-secondary">Technology details could not be extracted.</p>
             {% endif %}
 
-            <span class="section-label">Subdomains Discovered (Total: {{ results.subdomains|length }})</span>
-            {% if results.subdomains %}
-            <div class="scroll-box">
-                <ul class="clean-list">
-                    {% for sub in results.subdomains %}
-                    <li class="list-item"> {{ sub }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <span class="section-label">SSL/TLS Configuration Analysis</span>
+            {% if results.ssl_info %}
+            {% if results.ssl_info.error %}
+            <p class="danger-text">{{ results.ssl_info.error }}</p>
             {% else %}
-            <p class="text-secondary">No subdomains found.</p>
+            <div class="tech-grid">
+                <!-- Status -->
+                {% if results.ssl_info.is_expired %}
+                <div class="tech-card"
+                    style="border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.03);">
+                    <span class="tech-icon">🚨</span>
+                    <span class="tech-title" style="color: #ef4444;">SSL Status</span>
+                    <span class="tech-value">EXPIRED</span>
+                </div>
+                {% else %}
+                <div class="tech-card"
+                    style="border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.03);">
+                    <span class="tech-icon">🔒</span>
+                    <span class="tech-title" style="color: #10b981;">SSL Status</span>
+                    <span class="tech-value">VALID (Secure)</span>
+                </div>
+                {% endif %}
+
+                <!-- Issuer -->
+                <div class="tech-card">
+                    <span class="tech-icon">🏢</span>
+                    <span class="tech-title">Issuer</span>
+                    <span class="tech-value" style="font-size: 0.85rem; word-break: break-word;">{{
+                        results.ssl_info.issuer }}</span>
+                </div>
+
+                <!-- Days Left -->
+                <div class="tech-card">
+                    <span class="tech-icon">⏳</span>
+                    <span class="tech-title">Days Remaining</span>
+                    <span class="tech-value">{{ results.ssl_info.days_left }} Days</span>
+                </div>
+
+                <!-- Protocol -->
+                {% if 'v' in results.ssl_info.protocol.lower() and ('v3' in results.ssl_info.protocol.lower() or '1.0'
+                in results.ssl_info.protocol.lower()) %}
+                <div class="tech-card">
+                    <span class="tech-icon">🔌</span>
+                    <span class="tech-title">Protocol</span>
+                    <span class="tech-value" style="color: #ef4444;">{{ results.ssl_info.protocol }}</span>
+                </div>
+                {% else %}
+                <div class="tech-card">
+                    <span class="tech-icon">🔌</span>
+                    <span class="tech-title">Protocol</span>
+                    <span class="tech-value" style="color: var(--text);">{{ results.ssl_info.protocol }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+            <p class="text-secondary">SSL/TLS analysis could not be performed.</p>
             {% endif %}
 
             <span class="section-label">Smart Directory Scanner (Robots.txt Paths: {{ results.directories.robots_count
@@ -286,23 +362,6 @@
             </div>
             {% else %}
             <p class="text-secondary">No sensitive files or directories discovered.</p>
-            {% endif %}
-
-            <span class="section-label">Open Ports</span>
-            {% if results.open_ports %}
-            <div class="scroll-box">
-                <ul class="clean-list">
-                    {% for item in results.open_ports %}
-                    <li class="list-item">
-                        Port {{ item.port }} is <span style="color: var(--accent);">OPEN</span>
-                        <span style="color: var(--subtext); font-size: 0.8rem; margin-left: 10px;">➜ {{ item.banner
-                            }}</span>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% else %}
-            <p class="text-secondary">No open ports found in the default list.</p>
             {% endif %}
 
             <span class="section-label">Security Headers Analysis</span>
