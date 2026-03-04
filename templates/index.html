@@ -284,8 +284,12 @@
             {% if results.open_ports %}
             <div class="scroll-box">
                 <ul class="clean-list">
-                    {% for port in results.open_ports %}
-                    <li class="list-item"> Port {{ port }} is <span style="color: var(--accent-color);">OPEN</span></li>
+                    {% for item in results.open_ports %}
+                    <li class="list-item">
+                        Port {{ item.port }} is <span style="color: var(--accent);">OPEN</span>
+                        <span style="color: var(--subtext); font-size: 0.8rem; margin-left: 10px;">➜ {{ item.banner
+                            }}</span>
+                    </li>
                     {% endfor %}
                 </ul>
             </div>
