@@ -2,11 +2,11 @@
 
 WebHound is a blazing fast, Flask-based open-source Web Reconnaissance (OSINT) and Pentesting tool. It performs deep, multi-threaded intelligence gathering on target domains in seconds.
 
-🌐 **Live Demo:** [webhound.huseyinbudak.com.tr](https://webhound.huseyinbudak.com.tr/)
+**Live Demo:** [webhound.huseyinbudak.com.tr](https://webhound.huseyinbudak.com.tr/)
 
 *Note: This project is actively being developed and is continuously upgraded.*
 
-## 🚀 Key Features
+## Key Features
 
 The scanner operates asynchronously, executing all modules in parallel so the UI never freezes. It performs a comprehensive "outside-in" pentest analysis in the following flow:
 
@@ -19,13 +19,13 @@ The scanner operates asynchronously, executing all modules in parallel so the UI
 - **Smart Directory Scanning:** Searches for hidden administrative panels, `.git` configurations, databases, and `.env` files using common paths and `robots.txt` traversal.
 - **Security Headers Check:** Analyzes the HTTP response to report present or dangerously missing security headers (like CSP, HSTS, X-Frame-Options).
 
-## ⚡ Performance Optimization
+## Performance Optimization
 - **Fault-Tolerant Engine:** Uses a concurrent ThreadPoolExecutor wrapper with an absolute `30-second timeout` kill-switch for hanging requests.
 - **Optimized Threads:** Spawns up to 40 threads for directory and port scanning, dropping individual connection timeouts to `0.8 - 3s` to blast through load-balancers without sacrificing Gunicorn/Nginx server stability.
 
 ---
 
-## 🛠️ Quick Start
+## Quick Start
 
 **1. Clone & Install Dependencies:**
 ```bash
@@ -44,11 +44,11 @@ Navigate to `http://127.0.0.1:5000` in your browser, enter a target URL (e.g. `h
 
 ---
 
-## 🔮 Planned Updates (Roadmap)
+## Planned Updates (Roadmap)
 - [ ] Direct Subdomain Takeover Vulnerability checks.
 - [ ] Vulnerability (CVE) matching based on the extracted Tech Stack / Port Banners.
 - [ ] Exporting full scan results as a PDF or JSON report.
 - [ ] ... and more updates coming soon!
 
-## ⚖️ Legal Disclaimer
+## Legal Disclaimer
 This tool is for educational and ethical testing (authorized pentesting) purposes only. Unauthorized use against targets without prior, mutual, and written consent is illegal. The developer is not responsible for any misuse, damage, or legal consequences caused by this program.
