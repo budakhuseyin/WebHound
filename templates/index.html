@@ -9,13 +9,29 @@
 </head>
 
 <body>
+    <!-- LOADING OVERLAY -->
+    <div id="loading-overlay">
+        <div class="radar-spinner"></div>
+        <div id="loading-main-text" class="loading-text">SCAN IN PROGRESS</div>
+        <div id="loading-subtext" class="loading-subtext">Initializing modules...</div>
+    </div>
+
     <div class="main-container">
         <h1>WebHound <span style="font-weight: 300; opacity: 0.6;">Scanner</span></h1>
 
-        <form method="post" action="/">
+        <form method="post" action="/" onsubmit="showLoadingScreen()">
             <input type="text" name="target_url" placeholder="https://example.com" required>
             <button type="submit">Scan Target</button>
         </form>
+
+        <!-- Yasal Uyarı Metni -->
+        {% if not results %}
+        <div class="legal-warning" id="legal-warning">
+            ⚠️ <strong>Legal Disclaimer:</strong> WebHound is an intelligence gathering tool. Use it only on systems you
+            own or have explicit permission to scan. By clicking "Scan Target," you accept all legal responsibilities.
+            We do not store or track your scans.
+        </div>
+        {% endif %}
 
         {% if results %}
         <div class="result-box">
@@ -140,6 +156,51 @@
             <p class="text-secondary">Technology details could not be extracted.</p>
             {% endif %}
 
+            <span class="section-label">Subdomains Discovered (Total: {{ results.subdomains|length }})</span>
+            {% if results.subdomains %}
+            <div class="scroll-box">
+                <ul class="clean-list">
+                    {% for sub in results.subdomains %}
+                    <li class="list-item"> {{ sub }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <p class="text-secondary">No subdomains found.</p>
+            {% endif %}
+
+            <span class="section-label">Smart Directory Scanner (Robots.txt Paths: {{ results.directories.robots_count
+                }})</span>
+            {% if results.directories.discovered %}
+            <div class="scroll-box">
+                <ul class="clean-list">
+                    {% for item in results.directories.discovered %}
+                    <li class="list-item">
+                        <div class="directory-item">
+                            <span class="header-name" style="word-break: break-all; margin-right: 15px;">{{ item.url
+                                }}</span>
+                            <span
+                                class="status-badge {% if item.status == 200 %}status-200{% elif item.status == 403 %}status-403{% elif item.status in [301, 302, 307, 308] %}status-403{% else %}status-other{% endif %}">
+                                {{ item.status }}
+                            </span>
+                        </div>
+                        {% if item.redirect %}
+                        <div style="font-size: 0.75rem; color: var(--accent); opacity: 0.8; margin-top: 2px;">
+                            ➜ Redirects to: <span style="font-family: 'JetBrains Mono', monospace;">{{ item.redirect
+                                }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="item-size">
+                            Size: {{ (item.size / 1024)|round(2) }} KB
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <p class="text-secondary">No sensitive files or directories discovered.</p>
+            {% endif %}
+
             <span class="section-label">Open Ports</span>
             {% if results.open_ports %}
             <div class="scroll-box">
@@ -192,56 +253,48 @@
             </div>
             {% endif %}
             {% endif %}
-
-            <span class="section-label">Subdomains Discovered (Total: {{ results.subdomains|length }})</span>
-            {% if results.subdomains %}
-            <div class="scroll-box">
-                <ul class="clean-list">
-                    {% for sub in results.subdomains %}
-                    <li class="list-item"> {{ sub }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% else %}
-            <p class="text-secondary">No subdomains found.</p>
-            {% endif %}
-
-            <span class="section-label">Smart Directory Scanner (Robots.txt Paths: {{ results.directories.robots_count
-                }})</span>
-            {% if results.directories.discovered %}
-            <div class="scroll-box">
-                <ul class="clean-list">
-                    {% for item in results.directories.discovered %}
-                    <li class="list-item">
-                        <div class="directory-item">
-                            <span class="header-name" style="word-break: break-all; margin-right: 15px;">{{ item.url
-                                }}</span>
-                            <span
-                                class="status-badge {% if item.status == 200 %}status-200{% elif item.status == 403 %}status-403{% elif item.status in [301, 302, 307, 308] %}status-403{% else %}status-other{% endif %}">
-                                {{ item.status }}
-                            </span>
-                        </div>
-                        {% if item.redirect %}
-                        <div style="font-size: 0.75rem; color: var(--accent); opacity: 0.8; margin-top: 2px;">
-                            ➜ Redirects to: <span style="font-family: 'JetBrains Mono', monospace;">{{ item.redirect
-                                }}</span>
-                        </div>
-                        {% endif %}
-                        <div class="item-size">
-                            Size: {{ (item.size / 1024)|round(2) }} KB
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% else %}
-            <p class="text-secondary">No sensitive files or directories discovered.</p>
-            {% endif %}
             {% endif %}
         </div>
         {% endif %}
 
     </div>
+
+    <!-- Yükleme Ekranı JavaScript Dosyası -->
+    <script>
+        function showLoadingScreen() {
+            // Overlayı aç ve kaydırmayı kitle
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            // Yasal uyarıyı gizle (Eğer ekranda varsa)
+            const warningInfo = document.getElementById('legal-warning');
+            if (warningInfo) {
+                warningInfo.style.display = 'none';
+            }
+
+            // Metin animasyonlarını başlat
+            const subtextElement = document.getElementById('loading-subtext');
+            const scanningPhases = [
+                "Bypassing security layers...",
+                "Extracting WHOIS identity...",
+                "Pinging target servers...",
+                "Discovering hidden directories...",
+                "Analyzing security headers...",
+                "Compiling tech stack...",
+                "Finalizing report..."
+            ];
+
+            let count = 0;
+            setInterval(() => {
+                if (count < scanningPhases.length) {
+                    subtextElement.innerText = scanningPhases[count];
+                    count++;
+                } else {
+                    subtextElement.innerText = scanningPhases[scanningPhases.length - 1]; // Son metinde kal
+                }
+            }, 1800); // Her 1.8 saniyede bir değiştir
+        }
+    </script>
 </body>
 
 </html>
