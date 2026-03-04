@@ -14,7 +14,7 @@ def check_robots_txt(base_url):
     robots_url = f"{base_url}/robots.txt"
     paths = []
     try:
-        response = requests.get(robots_url, headers=HEADERS, timeout=5)
+        response = requests.get(robots_url, headers=HEADERS, timeout=3)
         if response.status_code == 200:
             for line in response.text.split('\n'):
                 if line.lower().startswith('disallow:'):
@@ -32,14 +32,14 @@ def get_baseline(base_url):
     # File baseline
     file_res = {"status_code": 404, "len": 0}
     try:
-        r = requests.get(f"{base_url}/{rnd}.html", headers=HEADERS, timeout=7, allow_redirects=False)
+        r = requests.get(f"{base_url}/{rnd}.html", headers=HEADERS, timeout=4, allow_redirects=False)
         file_res = {"status_code": r.status_code, "len": len(r.content)}
     except: pass
 
     # Directory baseline
     dir_res = {"status_code": 404, "len": 0}
     try:
-        r = requests.get(f"{base_url}/{rnd}/", headers=HEADERS, timeout=7, allow_redirects=False)
+        r = requests.get(f"{base_url}/{rnd}/", headers=HEADERS, timeout=4, allow_redirects=False)
         dir_res = {"status_code": r.status_code, "len": len(r.content)}
     except: pass
 
@@ -48,7 +48,8 @@ def get_baseline(base_url):
 def check_path(url, baseline, base_url):
     """Test single path and verify results."""
     try:
-        response = requests.get(url, headers=HEADERS, timeout=5, allow_redirects=False)
+        # Hızlı yanıt için timeout=3 sn
+        response = requests.get(url, headers=HEADERS, timeout=3, allow_redirects=False)
         clench = len(response.content)
         status = response.status_code
         
@@ -68,7 +69,7 @@ def check_path(url, baseline, base_url):
                     return None
 
                 try:
-                    f_res = requests.get(target, headers=HEADERS, timeout=5, allow_redirects=True)
+                    f_res = requests.get(target, headers=HEADERS, timeout=3, allow_redirects=True)
                     if f_res.status_code in [200, 403]:
                         return {"url": url, "status": status, "size": len(f_res.content), "redirect": target}
                 except: pass
@@ -87,7 +88,7 @@ def scan_directories(domain):
     base_url = None
     for proto in ["https://", "http://"]:
         try:
-            r = requests.get(f"{proto}{domain}", headers=HEADERS, timeout=5, allow_redirects=True)
+            r = requests.get(f"{proto}{domain}", headers=HEADERS, timeout=3, allow_redirects=True)
             base_url = r.url.rstrip('/')
             break
         except: continue
@@ -112,7 +113,8 @@ def scan_directories(domain):
     targets = [f"{base_url}/{w.lstrip('/')}" for w in wordlist]
     found = []
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+    # Canlı ortam (Production) performansı için Thread sayısı 10'dan 40'a çıkarıldı
+    with concurrent.futures.ThreadPoolExecutor(max_workers=40) as executor:
         futures = {executor.submit(check_path, t, baseline, base_url): t for t in targets}
         for f in concurrent.futures.as_completed(futures):
             res = f.result()

@@ -11,9 +11,14 @@ def scan_dns_records(domain):
     
     record_types = ["A", "AAAA", "MX", "TXT", "NS"]
     
+    # Canlı sunucu (Production) gecikmelerini önlemek için Timeout 2 saniyeye çekildi
+    resolver = dns.resolver.Resolver()
+    resolver.timeout = 2
+    resolver.lifetime = 2
+    
     for record_type in record_types:
         try:
-            answers = dns.resolver.resolve(domain, record_type)
+            answers = resolver.resolve(domain, record_type)
             for rdata in answers:
                 if record_type == "MX":
                     records[record_type].append(f"{rdata.preference} {rdata.exchange.to_text().strip('.')}")

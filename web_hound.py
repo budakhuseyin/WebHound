@@ -1,6 +1,7 @@
 import socket
 from urllib.parse import urlparse
 import concurrent.futures # makes all functions work together
+import logging
 from scanners.port_scanner import scan_ports
 from scanners.subdomain import find_subdomains
 from scanners.header import check_security_headers
@@ -9,6 +10,16 @@ from scanners.tech_detector import detect_technologies
 from scanners.ssl_scanner import check_ssl
 from scanners.whois_scanner import get_whois_info
 from scanners.dns_scanner import scan_dns_records
+
+def safe_result(future, default_val=None, timeout=30):
+    """Her modül için bir zaman aşımı (timeout) belirler. Eğer modül 30 saniye
+    içinde cevap vermezse tüm sistemi kitlememek için varsayılan değeri döner."""
+    try:
+        return future.result(timeout=timeout)
+    except concurrent.futures.TimeoutError:
+        return default_val if default_val is not None else {"error": "Scan timed out (30s limit)"}
+    except Exception as e:
+        return default_val if default_val is not None else {"error": f"Internal scan error: {str(e)}"}
 
 def run_recon(target_url):
     
@@ -35,16 +46,15 @@ def run_recon(target_url):
         future_whois_scanner=executor.submit(get_whois_info,domain)
         future_dns_scanner=executor.submit(scan_dns_records,domain)
 
-        #founded tasks
-
-        founded_ports=future_ports.result()
-        founded_subdomains=future_subdomains.result()
-        founded_headers=future_headers.result()
-        founded_directories=future_directories.result()
-        founded_tech_detector=future_tech_detector.result()
-        founded_ssl=future_ssl.result()
-        founded_whois_scanner=future_whois_scanner.result()
-        founded_dns_scanner=future_dns_scanner.result()
+        # founded tasks (Safe result extraction ile kilitlenmeleri önledik)
+        founded_ports = safe_result(future_ports, default_val=[])
+        founded_subdomains = safe_result(future_subdomains, default_val=[])
+        founded_headers = safe_result(future_headers, default_val={"error": "Headers scan failed or timed out"})
+        founded_directories = safe_result(future_directories, default_val={"robots_count": 0, "discovered": []})
+        founded_tech_detector = safe_result(future_tech_detector, default_val={"error": "Tech detection timed out"})
+        founded_ssl = safe_result(future_ssl, default_val={"error": "SSL check timed out"})
+        founded_whois_scanner = safe_result(future_whois_scanner, default_val={"error": "WHOIS scan timed out"})
+        founded_dns_scanner = safe_result(future_dns_scanner, default_val={"error": "DNS scan timed out"})
 
     
     return {

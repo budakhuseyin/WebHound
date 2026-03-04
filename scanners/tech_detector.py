@@ -105,6 +105,22 @@ def detect_technologies(url):
         elif 'x-aspnetmvc-version' in [k.lower() for k in resp_headers.keys()]:
             tech_stack['framework'] = "ASP.NET MVC"
             tech_stack['programming_language'] = "ASP.NET"
+        # Modern JS Frameworks (Next.js / Nuxt.js / SvelteKit)
+        elif 'id="__next"' in html_content_lower or '/_next/' in html_content_lower:
+            tech_stack['framework'] = "Next.js"
+            tech_stack['frontend'].append("React")
+            tech_stack['programming_language'] = "JavaScript (Node.js)"
+        elif 'id="__nuxt"' in html_content_lower or '/_nuxt/' in html_content_lower:
+            tech_stack['framework'] = "Nuxt.js"
+            tech_stack['frontend'].append("Vue.js")
+            tech_stack['programming_language'] = "JavaScript (Node.js)"
+        # Diğer Backend Çatıları
+        elif 'werkzeug' in server_header.lower():
+            tech_stack['framework'] = "Flask / Werkzeug"
+            tech_stack['programming_language'] = "Python"
+        elif 'x-application-context' in [k.lower() for k in resp_headers.keys()]:
+            tech_stack['framework'] = "Spring Boot"
+            tech_stack['programming_language'] = "Java"
             
         # 4. İçerik Yönetim Sistemleri (CMS)
         generator = soup.find('meta', attrs={'name': 'generator'})
@@ -124,6 +140,12 @@ def detect_technologies(url):
             tech_stack['programming_language'] = "PHP"
         elif 'shopify' in gen_content or 'cdn.shopify.com' in html_content_lower:
             tech_stack['cms'] = "Shopify"
+        elif 'wix.com' in html_content_lower or 'x-wix' in waf_headers:
+            tech_stack['cms'] = "Wix"
+        elif 'squarespace' in html_content_lower:
+            tech_stack['cms'] = "Squarespace"
+        elif 'data-wf-site' in html_content_lower or 'webflow' in html_content_lower:
+            tech_stack['cms'] = "Webflow"
 
         # 5. Frontend Kütüphaneleri (JavaScript & CSS)
         frontend_libs = set()
@@ -144,6 +166,8 @@ def detect_technologies(url):
             frontend_libs.add("Bootstrap")
         if 'jquery' in assets_text:
             frontend_libs.add("jQuery")
+        if 'tailwindcss' in assets_text or 'tailwind' in html_content_lower:
+            frontend_libs.add("Tailwind CSS")
             
         if frontend_libs:
             tech_stack['frontend'] = list(frontend_libs)
