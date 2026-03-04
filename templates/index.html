@@ -28,6 +28,68 @@
                 <p><strong>IP Address:</strong> <span class="header-name">{{ results.ip }}</span></p>
             </div>
 
+            <span class="section-label">Domain Identity (WHOIS)</span>
+            {% if results.whois_data and not results.whois_data.error %}
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <span class="tech-icon">🏢</span>
+                    <span class="tech-title">Registrar</span>
+                    <span class="tech-value">{{ results.whois_data.registrar }}</span>
+                </div>
+
+                <div class="tech-card">
+                    <span class="tech-icon">📅</span>
+                    <span class="tech-title">Creation Date</span>
+                    <span class="tech-value">{{ results.whois_data.creation_date }}</span>
+                </div>
+
+                <div class="tech-card">
+                    <span class="tech-icon">⏳</span>
+                    <span class="tech-title">Expiration Date</span>
+                    <span class="tech-value">{{ results.whois_data.expiration_date }}</span>
+                </div>
+
+                <div class="tech-card">
+                    <span class="tech-icon">📍</span>
+                    <span class="tech-title">Country</span>
+                    <span class="tech-value">{{ results.whois_data.country }}</span>
+                </div>
+            </div>
+
+            {% if results.whois_data.emails or results.whois_data.name_servers %}
+            <div class="headers-container" style="margin-top: 15px;">
+                {% if results.whois_data.name_servers %}
+                <div class="header-item">
+                    <div class="header-name">☁️ Name Servers</div>
+                    <div class="header-value">
+                        {% for ns in results.whois_data.name_servers %}
+                        <span class="tech-tag" style="margin-right: 5px; font-size: 0.8rem;">{{ ns }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if results.whois_data.emails %}
+                <div class="header-item">
+                    <div class="header-name">📧 Contact Emails</div>
+                    <div class="header-value">
+                        {% for email in results.whois_data.emails %}
+                        <span class="tech-tag"
+                            style="margin-right: 5px; font-size: 0.8rem; background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2);">{{
+                            email }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% elif results.whois_data and results.whois_data.error %}
+            <p class="danger-text">{{ results.whois_data.error }}</p>
+            {% else %}
+            <p class="text-secondary">WHOIS details block could not be loaded.</p>
+            {% endif %}
+
             <span class="section-label">Technology Stack</span>
             {% if results.tech_stack %}
             <div class="tech-grid">
