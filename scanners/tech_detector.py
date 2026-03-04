@@ -12,6 +12,7 @@ def detect_technologies(url):
 
     tech_stack = {
         "web_server": "Not Found",
+        "waf": "Not Detected",
         "programming_language": "Not Found",
         "framework": "Not Found",
         "cms": "Not Found",
@@ -46,6 +47,26 @@ def detect_technologies(url):
             tech_stack['web_server'] = 'LiteSpeed'
         elif server_header:
             tech_stack['web_server'] = resp_headers.get('Server')
+            
+        # --- WAF (Web Application Firewall) Tespiti ---
+        # Genellikle çok spesifik header başlıkları veya çerezlerle kendilerini belli ederler
+        waf_headers = str(resp_headers).lower()
+        
+        if 'cloudflare' in server_header or '__cfduid' in cookie_names_str or 'cf-ray' in waf_headers:
+            tech_stack['waf'] = 'Cloudflare'
+            tech_stack['web_server'] = 'Cloudflare' # Web sunucusunu da ezmiş olur
+        elif 'x-sucuri' in waf_headers or 'sucuri' in server_header:
+            tech_stack['waf'] = 'Sucuri'
+        elif 'x-hw' in waf_headers or 'highwinds' in server_header:
+            tech_stack['waf'] = 'Highwinds / StackPath'
+        elif 'imperva' in server_header or 'incap_ses' in cookie_names_str or 'visid_incap' in cookie_names_str:
+            tech_stack['waf'] = 'Imperva (Incapsula)'
+        elif 'akamai' in server_header or 'x-akamai' in waf_headers:
+            tech_stack['waf'] = 'Akamai'
+        elif 'awselb' in cookie_names_str or 'awsalb' in cookie_names_str:
+            tech_stack['waf'] = 'AWS WAF / ALB'
+        elif 'f5' in server_header or 'bigip' in cookie_names_str:
+            tech_stack['waf'] = 'F5 BIG-IP'
             
         # 2. Backend Dilleri (Programming Languages)
         powered_by = resp_headers.get('X-Powered-By', '').lower()
