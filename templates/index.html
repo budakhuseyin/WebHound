@@ -106,6 +106,85 @@
             <p class="text-secondary">WHOIS details block could not be loaded.</p>
             {% endif %}
 
+            <span class="section-label">DNS Records (Architectural Mapping)</span>
+            {% if results.dns_records %}
+            {% if results.dns_records.error %}
+            <p class="danger-text">{{ results.dns_records.error }}</p>
+            {% else %}
+            <div class="headers-container">
+                <!-- A Records -->
+                {% if results.dns_records.A %}
+                <div class="header-item">
+                    <div class="header-name">IPv4 (A)</div>
+                    <div class="header-value">
+                        {% for record in results.dns_records.A %}
+                        <span class="tech-tag"
+                            style="margin-right: 5px; font-size: 0.8rem; border-color: rgba(16, 185, 129, 0.3);">{{
+                            record }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- AAAA Records -->
+                {% if results.dns_records.AAAA %}
+                <div class="header-item">
+                    <div class="header-name">IPv6 (AAAA)</div>
+                    <div class="header-value">
+                        {% for record in results.dns_records.AAAA %}
+                        <span class="tech-tag"
+                            style="margin-right: 5px; font-size: 0.8rem; border-color: rgba(16, 185, 129, 0.3);">{{
+                            record }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- MX Records -->
+                {% if results.dns_records.MX %}
+                <div class="header-item">
+                    <div class="header-name">Mail Exchange (MX)</div>
+                    <div class="header-value">
+                        {% for record in results.dns_records.MX %}
+                        <span class="tech-tag"
+                            style="margin-right: 5px; font-size: 0.8rem; border-color: rgba(59, 130, 246, 0.3);">{{
+                            record }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- NS Records -->
+                {% if results.dns_records.NS %}
+                <div class="header-item">
+                    <div class="header-name">Name Servers (NS)</div>
+                    <div class="header-value">
+                        {% for record in results.dns_records.NS %}
+                        <span class="tech-tag"
+                            style="margin-right: 5px; font-size: 0.8rem; border-color: rgba(245, 158, 11, 0.3);">{{
+                            record }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- TXT Records -->
+                {% if results.dns_records.TXT %}
+                <div class="header-item">
+                    <div class="header-name">Text Records (TXT / SPF / DMARC)</div>
+                    <div class="header-value">
+                        {% for record in results.dns_records.TXT %}
+                        <span class="csp-directive" style="font-size: 0.8rem; margin-bottom: 8px;">{{ record }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+            <p class="text-secondary">DNS records could not be extracted.</p>
+            {% endif %}
+
             <span class="section-label">Technology Stack</span>
             {% if results.tech_stack %}
             <div class="tech-grid">
