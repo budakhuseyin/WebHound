@@ -48,6 +48,13 @@ def detect_technologies(url):
         elif server_header:
             tech_stack['web_server'] = resp_headers.get('Server')
             
+        # Cookie ve header değişkenlerini WAF tespitinden önce hazırla
+        powered_by = resp_headers.get('X-Powered-By', '').lower()
+        cookie_names = [c.name.lower() for c in cookies]
+        
+        # LİSTE İÇİ SUBSTRING ÇÖZÜMÜ: cookie'leri text string'e dönüştürüp aratmak en garantisidir
+        cookie_names_str = str(cookie_names)
+
         # --- WAF (Web Application Firewall) Tespiti ---
         # Genellikle çok spesifik header başlıkları veya çerezlerle kendilerini belli ederler
         waf_headers = str(resp_headers).lower()
@@ -69,12 +76,6 @@ def detect_technologies(url):
             tech_stack['waf'] = 'F5 BIG-IP'
             
         # 2. Backend Dilleri (Programming Languages)
-        powered_by = resp_headers.get('X-Powered-By', '').lower()
-        cookie_names = [c.name.lower() for c in cookies]
-        
-        # LİSTE İÇİ SUBSTRING ÇÖZÜMÜ: cookie'leri text string'e dönüştürüp aratmak en garantisidir
-        cookie_names_str = str(cookie_names)
-        
         if 'php' in powered_by or 'phpsessid' in cookie_names_str or '.php' in html_content_lower:
             tech_stack['programming_language'] = "PHP"
         elif 'python' in powered_by:
