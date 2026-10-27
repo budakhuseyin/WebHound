@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebHound Recon Tool</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
@@ -187,10 +188,17 @@
 
             <span class="section-label">Subdomains Discovered (Total: {{ results.subdomains|length }})</span>
             {% if results.subdomains %}
+            <input
+                type="text"
+                id="subdomain-search"
+                placeholder="🔍 Filter subdomains..."
+                oninput="filterSubdomains(this.value)"
+                style="width:100%; padding:8px 12px; margin-bottom:10px; background:rgba(0,0,0,0.2); color:var(--accent); border:1px solid var(--glass-border); border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:0.85rem; outline:none;"
+            >
             <div class="scroll-box">
-                <ul class="clean-list">
+                <ul class="clean-list" id="subdomain-list">
                     {% for sub in results.subdomains %}
-                    <li class="list-item"> {{ sub }}</li>
+                    <li class="list-item subdomain-entry"> {{ sub }}</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -409,20 +417,19 @@
 
     </div>
 
-    <!-- Yükleme Ekranı JavaScript Dosyası -->
     <script>
+        // setInterval ID saklanıyor → memory leak önlendi
+        let loadingIntervalId = null;
+
         function showLoadingScreen() {
-            // Overlayı aç ve kaydırmayı kitle
             document.getElementById('loading-overlay').style.display = 'flex';
             document.body.style.overflow = 'hidden';
 
-            // Yasal uyarıyı gizle (Eğer ekranda varsa)
             const warningInfo = document.getElementById('legal-warning');
             if (warningInfo) {
                 warningInfo.style.display = 'none';
             }
 
-            // Metin animasyonlarını başlat
             const subtextElement = document.getElementById('loading-subtext');
             const scanningPhases = [
                 "Bypassing security layers...",
@@ -434,15 +441,25 @@
                 "Finalizing report..."
             ];
 
+            // Önceki interval varsa temizle (tekrarlı submit'te birden fazla timer çalışmasını önler)
+            if (loadingIntervalId !== null) {
+                clearInterval(loadingIntervalId);
+            }
+
             let count = 0;
-            setInterval(() => {
-                if (count < scanningPhases.length) {
-                    subtextElement.innerText = scanningPhases[count];
-                    count++;
-                } else {
-                    subtextElement.innerText = scanningPhases[scanningPhases.length - 1]; // Son metinde kal
-                }
-            }, 1800); // Her 1.8 saniyede bir değiştir
+            loadingIntervalId = setInterval(() => {
+                subtextElement.innerText = scanningPhases[Math.min(count, scanningPhases.length - 1)];
+                count++;
+            }, 1800);
+        }
+
+        // Subdomain arama filtresi
+        function filterSubdomains(query) {
+            const items = document.querySelectorAll('.subdomain-entry');
+            const q = query.toLowerCase().trim();
+            items.forEach(li => {
+                li.style.display = li.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
         }
     </script>
 </body>

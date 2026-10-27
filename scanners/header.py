@@ -1,85 +1,58 @@
 import requests
 
 
+# Okunabilirlik için header açıklamaları sabit olarak tanımlandı
+HEADER_NOTES = {
+    'Strict-Transport-Security':      'HSTS enabled',
+    'Content-Security-Policy':        'CSP present — inspect policy for quality',
+    'X-Frame-Options':                'Provides clickjacking protection',
+    'X-Content-Type-Options':         'Prevents MIME sniffing',
+    'X-XSS-Protection':               'Deprecated in modern browsers',
+    'Referrer-Policy':                'Controls referrer information',
+    'Permissions-Policy':             'Controls powerful features (Feature-Policy)',
+    'Expect-CT':                      'Certificate transparency policy',
+    'Cross-Origin-Opener-Policy':     'COOP header (isolation)',
+    'Cross-Origin-Embedder-Policy':   'COEP header (isolation)',
+    'Cross-Origin-Resource-Policy':   'Controls cross-origin resource access',
+}
+
+HEADERS_TO_CHECK = list(HEADER_NOTES.keys())
+
+
 def check_security_headers(domain):
-    # Protokol tespiti (Daha esnek çalışma için)
-    base_url = None
-    for proto in ["https://", "http://"]:
-        try:
-            r = requests.head(f"{proto}{domain}", timeout=5, allow_redirects=True)
-            base_url = r.url.rstrip('/')
-            break
-        except:
-            continue
-    
-    if not base_url:
-        base_url = f"http://{domain}"
-
-    url = base_url
-
-    headers_to_check=[
-        'Strict-Transport-Security',
-        'Content-Security-Policy',
-        'X-Frame-Options',
-        'X-Content-Type-Options',
-        'X-XSS-Protection',
-        'Referrer-Policy',
-        'Permissions-Policy',
-        'Expect-CT',
-        'Cross-Origin-Opener-Policy',
-        'Cross-Origin-Embedder-Policy',
-        'Cross-Origin-Resource-Policy'
-    ]
-
-    results={
-        "present": {},
-        "missing": []
+    results = {
+        "present":     {},
+        "missing":     [],
+        "assessments": {},
     }
 
-    # per-header short assessments to help interpret presence/absence
-    results.setdefault("assessments", {})
+    # Protokol tespiti + header okuma tek request'te yapılıyor (duplicate istek kaldırıldı)
+    response = None
+    for proto in ["https://", "http://"]:
+        try:
+            response = requests.head(
+                f"{proto}{domain}",
+                timeout=5,
+                allow_redirects=True,
+            )
+            break
+        except requests.RequestException:
+            continue
 
-    try:
-        response= requests.head(url,timeout=5,allow_redirects=True)
-        server_headers= response.headers
+    if response is None:
+        return {"error": f"Could not connect to {domain} over HTTPS or HTTP."}
 
-        for header in headers_to_check:
-            if header.lower() in (h.lower() for h in server_headers.keys()):
-                # fetch header value case-insensitively
-                value = next((server_headers[h] for h in server_headers.keys() if h.lower() == header.lower()), None)
-                results["present"][header] = value
+    server_headers = response.headers
+    # Karşılaştırma için küçük harfli header isimlerini önbelleğe al
+    lower_keys = {k.lower(): k for k in server_headers.keys()}
 
-                # simple, conservative assessment notes
-                note = "Present"
-                if header == 'X-XSS-Protection':
-                    note = 'Deprecated in modern browsers'
-                elif header == 'Strict-Transport-Security':
-                    note = 'HSTS enabled' if value else 'HSTS header present'
-                elif header == 'Content-Security-Policy':
-                    note = 'CSP present — inspect policy for quality'
-                elif header == 'X-Frame-Options':
-                    note = 'Provides clickjacking protection'
-                elif header == 'X-Content-Type-Options':
-                    note = 'Prevents MIME sniffing'
-                elif header == 'Referrer-Policy':
-                    note = 'Controls referrer information'
-                elif header == 'Permissions-Policy':
-                    note = 'Controls powerful features (Feature-Policy)'
-                elif header == 'Expect-CT':
-                    note = 'Certificate transparency policy'
-                elif header == 'Cross-Origin-Opener-Policy':
-                    note = 'COOP header (isolation)'
-                elif header == 'Cross-Origin-Embedder-Policy':
-                    note = 'COEP header (isolation)'
-                elif header == 'Cross-Origin-Resource-Policy':
-                    note = 'Controls cross-origin resource access'
+    for header in HEADERS_TO_CHECK:
+        matched_key = lower_keys.get(header.lower())
+        if matched_key:
+            value = server_headers[matched_key]
+            results["present"][header] = value
+            results["assessments"][header] = HEADER_NOTES[header]
+        else:
+            results["missing"].append(header)
 
-                results['assessments'][header] = note
-            else:
-                results["missing"].append(header)
-        
-
-        return results
-    
-    except Exception as e:
-        return {"error": f"no connection: {str(e)}"}
+    return results

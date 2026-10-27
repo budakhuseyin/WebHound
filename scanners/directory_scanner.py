@@ -100,10 +100,34 @@ def scan_directories(domain):
     robots_paths = check_robots_txt(base_url)
     
     wordlist = [
-        '.env', '.env.old', '.git/config', 'config.php', 'wp-config.php',
-        'backup.zip', 'site.zip', 'database.sql', 'dump.sql',
-        'admin/', 'administrator/', 'cp/', 'cpanel/', 'login/',
-        'phpinfo.php', 'server-status', '.ssh/id_rsa', 'composer.json'
+        # Gizli / Hassas Dosyalar
+        '.env', '.env.old', '.env.backup', '.env.production',
+        '.git/config', '.git/HEAD', '.git/COMMIT_EDITMSG',
+        '.htaccess', '.htpasswd', 'web.config',
+        '.ssh/id_rsa', '.ssh/authorized_keys',
+        # Konfigürasyon & Kaynak Dosyalar
+        'config.php', 'config.yml', 'config.json',
+        'wp-config.php', 'wp-config.php.bak',
+        'composer.json', 'composer.lock', 'package.json',
+        'Dockerfile', 'docker-compose.yml',
+        # Yedek / Veritabanı Dökümleri
+        'backup.zip', 'backup.tar.gz', 'site.zip', 'www.zip',
+        'database.sql', 'dump.sql', 'db.sql', 'backup.sql',
+        # Sunucu Bilgisi & Durum Sayfaları
+        'phpinfo.php', 'info.php', 'test.php',
+        'server-status', 'server-info',
+        # Admin & Giriş Panelleri
+        'admin/', 'administrator/', 'admin/login',
+        'cp/', 'cpanel/', 'whm/',
+        'login/', 'signin', 'wp-login.php', 'wp-admin/',
+        'panel/', 'dashboard/', 'manage/',
+        # API & Geliştirme Endpoint'leri
+        'api/', 'api/v1/', 'api/v2/',
+        'swagger/', 'swagger-ui.html', 'api-docs',
+        'graphql', '.well-known/security.txt',
+        # Log & Geçici Dosyalar
+        'error.log', 'access.log', 'debug.log',
+        'tmp/', 'temp/', 'cache/',
     ]
     
     for p in robots_paths:

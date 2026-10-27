@@ -1,6 +1,6 @@
 import ssl
 import socket
-from datetime import datetime
+from datetime import datetime, timezone
 
 def check_ssl(domain):
     ssl_info = {
@@ -37,7 +37,7 @@ def check_ssl(domain):
                     ssl_info["valid_from"] = valid_from.strftime('%Y-%m-%d %H:%M:%S')
                     ssl_info["valid_to"] = valid_to.strftime('%Y-%m-%d %H:%M:%S')
                     
-                    now = datetime.utcnow()
+                    now = datetime.now(timezone.utc).replace(tzinfo=None)
                     days_left = (valid_to - now).days
                     ssl_info["days_left"] = days_left
                     ssl_info["is_expired"] = days_left < 0
