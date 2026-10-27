@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebHound Recon Tool</title>
+    <title>{% if results and results.domain %}{{ results.domain }} — WebHound{% else %}WebHound Recon Tool{% endif %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 </head>
