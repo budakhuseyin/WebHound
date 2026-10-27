@@ -21,7 +21,7 @@ def check_robots_txt(base_url):
                     path = line.split(':', 1)[1].strip()
                     if path and path != '/' and '*' not in path:
                         paths.append(path.lstrip('/'))
-    except:
+    except requests.RequestException:
         pass
     return list(set(paths))
 
@@ -34,14 +34,16 @@ def get_baseline(base_url):
     try:
         r = requests.get(f"{base_url}/{rnd}.html", headers=HEADERS, timeout=4, allow_redirects=False)
         file_res = {"status_code": r.status_code, "len": len(r.content)}
-    except: pass
+    except requests.RequestException:
+        pass
 
     # Directory baseline
     dir_res = {"status_code": 404, "len": 0}
     try:
         r = requests.get(f"{base_url}/{rnd}/", headers=HEADERS, timeout=4, allow_redirects=False)
         dir_res = {"status_code": r.status_code, "len": len(r.content)}
-    except: pass
+    except requests.RequestException:
+        pass
 
     return {"file": file_res, "dir": dir_res}
 
@@ -72,7 +74,8 @@ def check_path(url, baseline, base_url):
                     f_res = requests.get(target, headers=HEADERS, timeout=3, allow_redirects=True)
                     if f_res.status_code in [200, 403]:
                         return {"url": url, "status": status, "size": len(f_res.content), "redirect": target}
-                except: pass
+                except requests.RequestException:
+                    pass
             return None
 
         # Direct Access
@@ -80,7 +83,8 @@ def check_path(url, baseline, base_url):
             if status == baseline['file']['status_code'] and abs(clench - baseline['file']['len']) < 50:
                 return None
             return {"url": url, "status": status, "size": clench, "redirect": None}
-    except: pass
+    except requests.RequestException:
+        pass
     return None
 
 def scan_directories(domain):
@@ -91,7 +95,8 @@ def scan_directories(domain):
             r = requests.get(f"{proto}{domain}", headers=HEADERS, timeout=3, allow_redirects=True)
             base_url = r.url.rstrip('/')
             break
-        except: continue
+        except requests.RequestException:
+            continue
     
     if not base_url:
         base_url = f"http://{domain}"
@@ -144,4 +149,4 @@ def scan_directories(domain):
             res = f.result()
             if res: found.append(res)
 
-    return {"robots_count": len(robots_paths), "discovered": found, "baseline": baseline}
+    return {"robots_count": len(robots_paths), "discovered": found}

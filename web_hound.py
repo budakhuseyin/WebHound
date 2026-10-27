@@ -1,7 +1,6 @@
 import socket
 from urllib.parse import urlparse
-import concurrent.futures # makes all functions work together
-import logging
+import concurrent.futures
 from scanners.port_scanner import scan_ports
 from scanners.subdomain import find_subdomains
 from scanners.header import check_security_headers

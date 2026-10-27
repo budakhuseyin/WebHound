@@ -47,11 +47,11 @@ def scan_ports(ip):
             if result == 0:
                 banner_info = grab_banner(ip, port, timeout=1.5)
                 return {"port": port, "banner": banner_info}
-        except:
+        except OSError:
             pass
         return None
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(ports_to_scan)) as executor:
         results = list(executor.map(check_port, ports_to_scan))
     
     open_ports = [p for p in results if p is not None]

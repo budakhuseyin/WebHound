@@ -174,6 +174,6 @@ def detect_technologies(url):
             tech_stack['frontend'] = list(frontend_libs)
             
     except Exception as e:
-        tech_stack["error"] = f"Tarama sırasında hata oluştu: {str(e)}"
+        tech_stack["error"] = f"Tech detection failed: {str(e)}"
         
     return tech_stack
