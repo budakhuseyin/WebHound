@@ -3,3 +3,5 @@ webHoundYolHaritasi.docx
 __pycache__/
 *.pyc
 venv/
+__init__.py
+*.DS_Store
