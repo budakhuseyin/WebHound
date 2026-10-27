@@ -11,7 +11,9 @@ HEADERS = {
 
 
 def check_robots_txt(base_url):
-    """robots.txt dosyasını analiz eder. Hem Disallow hem Allow satırlarını toplar."""
+    """robots.txt dosyasını analiz eder. Sadece Disallow satırlarını toplar.
+    (Allow satırları zaten herkese açık yollar içerir ve yüzlercesi olabilir.)
+    """
     robots_url = f"{base_url}/robots.txt"
     paths = []
     try:
@@ -19,10 +21,9 @@ def check_robots_txt(base_url):
         if response.status_code == 200:
             for line in response.text.split('\n'):
                 line = line.strip()
-                # Disallow VE Allow satırları — ikisi de gerçek path varlığına işaret eder
-                if line.lower().startswith('disallow:') or line.lower().startswith('allow:'):
+                # Sadece Disallow — site sahibinin gizlemeye çalıştığı path'ler
+                if line.lower().startswith('disallow:'):
                     path = line.split(':', 1)[1].strip()
-                    # '/', boş ve wildcard içerenleri atla
                     if path and path != '/' and '*' not in path:
                         paths.append(path.lstrip('/'))
     except requests.RequestException:
